@@ -141,11 +141,20 @@ for(UFC_fighter in UFC_Fighter_pages){ # UFC_fighter="http://ufcstats.com/fighte
   # If the fighter has 0 fights, the first row will have all missing values, just skip these fighters
   if(dim(UFC_fights)[1]==1){ next }
   
-  # If the first record has W/L="next" this is an event in the future, so remove the record
-  if(unlist(UFC_fights[,"W/L"])[2]=="next"){ UFC_fights <- UFC_fights[-2,] }
-  
   # The first row is blank, remove it
   UFC_fights <- UFC_fights[-1,]
+  
+  # If the first record has W/L="next" this is an event in the future, so remove the record
+  if(unlist(UFC_fights[,"W/L"])[1]=="next"){ UFC_fights <- UFC_fights[-1,] }
+  
+  # If removing the upcoming event results in no remaining fights for this fighter, skip this fighter
+  if(dim(UFC_fights)[1]==0){ next }
+  
+  # If the following record has W/L="" this is an event in the future as well, so remove the record, and indicate via flag that this happened (to adjust a secondary issue later)
+  flag.2nd.upcoming.fgt <- 0
+  if(unlist(UFC_fights[,"W/L"])[1]==""){ 
+    UFC_fights <- UFC_fights[-1,] 
+    flag.2nd.upcoming.fgt <- 1 }
   
   # If the fighter has an upcoming UFC fight, but no other fights then skip them as well
   if(dim(UFC_fights)[1]==0){ next }
@@ -180,7 +189,8 @@ for(UFC_fighter in UFC_Fighter_pages){ # UFC_fighter="http://ufcstats.com/fighte
   
   # Scrape the links to each fight specific page
   fighters_fight_URLs <- UFC_html %>% html_nodes('tr') %>% html_attr('data-link')
-  UFC_fights$fight_page <- fighters_fight_URLs[is.na(fighters_fight_URLs)==FALSE]
+  if(flag.2nd.upcoming.fgt==0){ UFC_fights$fight_page <- fighters_fight_URLs[is.na(fighters_fight_URLs)==FALSE]     }
+  if(flag.2nd.upcoming.fgt==1){ UFC_fights$fight_page <- fighters_fight_URLs[is.na(fighters_fight_URLs)==FALSE][-1] }
   
   # Append the previously scraped fighter attributes to this dataframe
   UFC_fights$Height <- height

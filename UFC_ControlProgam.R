@@ -29,13 +29,13 @@ params.and.funcs <- c("base.dir","RAM.to.use.H2O","Rand.iters","Test.size","dir"
 RAM.to.use.H2O <- "40g"
 
 # The number of random hyper-parameter models to run for each model type
-Rand.iters <- 1000
+Rand.iters <- 2000
 
 # The size of the test dataset. The train/validation sets are used for model fitting, whereas the test set is used strictly to evaluate the final
 # model's performance. Keep in mind that there's 2 records for each fight (fighter1,fighter2) and (fighter2,fighter1) so Test.size=1000 fights 
 # really means 500 fights. Why are there 2 records per fight? Because we'll score the model using each of the 2 combinations, then average
 # the result for a final prediction.
-Test.size <- 1000
+Test.size <- 2000
 
 #===================#
 # Declare functions #
